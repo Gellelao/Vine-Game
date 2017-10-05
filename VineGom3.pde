@@ -34,6 +34,8 @@ void setup(){
   cursorCoords = new PVector(13/scale, 13/scale);
   
   grid = new Vine[gridWidth][gridHeight];
+  
+  grid[(int)cursorCoords.x][(int)cursorCoords.x] = new Vine(0);
 }
 
 void draw(){
@@ -63,11 +65,12 @@ void draw(){
 }
 
 void keyPressed() {
-  
   int dir = -1;
   int x = constrain((int)cursorCoords.x, 0, gridWidth-1);
   int y = constrain((int)cursorCoords.y, 0, gridHeight-1);
   
+  // WASD keys set a direction to create a vine from, and move the cursor
+  //
   if ((key == 'W') || (key == 'w')) {
     dir = 0;
     add(grid[x][y], dir);
@@ -89,8 +92,10 @@ void keyPressed() {
     if(cursorCoords.y < gridHeight)cursorCoords.y++;
   }
   
+  // The arrow keys allow you make short connections to adjacent vines without moving your cursor there
+  //
   if (keyCode == UP) { 
-    grid[x][y].attemptLink(x, y, 0);
+     grid[x][y].attemptLink(x, y, 0);
   }
   if(keyCode == DOWN) {
     grid[x][y].attemptLink(x, y, 1);
@@ -103,20 +108,18 @@ void keyPressed() {
   }
   
   if(key == ' ') {
-    spores.add(new Spore(x*tileSize+tileSize/2, y*tileSize+tileSize/2));
+    spores.add(new Spore(x*tileSize+tileSize/2, y*tileSize+tileSize/2, grid[x][y]));
   }
   
+  // Ensure we stay within the bounds
   x = constrain((int)cursorCoords.x, 0, gridWidth-1);
   y = constrain((int)cursorCoords.y, 0, gridHeight-1);
 
+  // If a proper key has been pressed, create a vine and add it's location to validVines
   if(dir >= 0){
     if(grid[x][y] == null) grid[x][y] = new Vine(dir);
     if(x < gridWidth-1 && y < gridHeight-1)
       validVines.add(new PVector(x, y));
-      
-    //println(validVines);
-    //scan();
-    //println("__________________");
   }
 }
 
@@ -124,77 +127,51 @@ void add(Vine v, int dir){
   if(v != null)v.addConnection(dir);
 }
 
-//boolean isCorner(int x, int y, int[] corner){
-//  if(grid[x][y] == null)return false;
-//  return(grid[x][y].matches(corner));
-//}
-
 void scan(){
-  //ArrayList<PVector> toRemove = new ArrayList<PVector>();
+  // scan loops through each vine(V), and checks the "box" that that vine and the three vines(v) to it's south-east make up
+  // it counts the connections (possible connections are shown by the lines below) and creates a Pod if conditions are right
+  
+  //   |  |
+  // --V--v--
+  //   |  |
+  // --v--v--
+  //   |  |
+  
   int x, y;
   for(PVector p : validVines){
-    // corners counts the number of valid corners in the current check
-    int corners = 0;
-    // sides counts the number of connections that these four vines hold collectively
+    // sides counts the number of sides surrounding the current "box"
     int sides = 0;
-    //println("Checking " + p);
+    // totalConnections counts the number of connections that these four vines hold collectively
+    int totalConnections = 0;
+    
     x = (int)p.x;
     y = (int)p.y;
     
+    // Count up info about this current "box"
     Vine v = grid[x][y];
     if(v != null){
-      corners+=v.sidesMatching(NW);
-      sides += v.conCount();
+      sides+=v.sidesMatching(NW);
+      totalConnections += v.conCount();
     }
     v = grid[x+1][y];
     if(v != null){
-      corners+=v.sidesMatching(NE);
-      sides += v.conCount();
+      sides+=v.sidesMatching(NE);
+      totalConnections += v.conCount();
     }
     v = grid[x][y+1];
     if(v != null){
-      corners+=v.sidesMatching(SW);
-      sides += v.conCount();
+      sides+=v.sidesMatching(SW);
+      totalConnections += v.conCount();
     }
     v = grid[x+1][y+1];
     if(v != null){
-      corners+=v.sidesMatching(SE);
-      sides += v.conCount();
+      sides+=v.sidesMatching(SE);
+      totalConnections += v.conCount();
     }
-    
-    
-    //if(v != null){
-    //  if(v.matches(NW))corners++;
-    //  sides += v.conCount();
-    //}
-    //v = grid[x+1][y];
-    //if(v != null){
-    //  if(v.matches(NE))corners++;
-    //  sides += v.conCount();
-    //}
-    //v = grid[x][y+1];
-    //if(v != null){
-    //  if(v.matches(SW))corners++;
-    //  sides += v.conCount();
-    //}
-    //v = grid[x+1][y+1];
-    //if(v != null){
-    //  if(v.matches(SE))corners++;
-    //  sides += v.conCount();
-    //}
-    
-    println(corners);
-    println(sides);
-    println("");
-    //if(corners >= 2 && sides >= 8){
-    //if(corners+count==12 && corners >= 3){
-      
-      // Work on some better rules for this
-    if(corners >= 8 && sides <= 10){
+
+    // To summon a pod, the box must be fully enclosed and have only two "extra" connections
+    if(sides >= 8 && totalConnections <= 10){
        pods.add(new Pod(x*tileSize+tileSize/2, y*tileSize+tileSize/2));
     }
-      //else toRemove.add(p);
-    }
-    println("__________________");
-  //validVines.removeAll(toRemove);
+  }
 }
