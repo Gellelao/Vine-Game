@@ -3,6 +3,8 @@ class Vine {
   PImage sprite1;
   //                   N  S  E  W
   int[] connections = {0, 0, 0, 0};
+  
+  boolean highlighted = false;
 
   Vine(int dir) {
     connections[invert(dir)] = 1;
@@ -11,6 +13,7 @@ class Vine {
   }
 
   void update(int x, int y) {
+    if(highlighted)rect(x*tileSize, y*tileSize, tileSize, tileSize);
     // North Connection
     if (connections[0] == 1) 
       image(sprite, x*tileSize, y*tileSize, tileSize, tileSize/2);
@@ -26,9 +29,6 @@ class Vine {
     // West Connection
     if (connections[3] == 1) 
       image(sprite1, x*tileSize, y*tileSize, tileSize/2, tileSize);
-      
-    //text(x + ", ", x*tileSize, y*tileSize);
-    //text(y, x*tileSize+15, y*tileSize);
   }
 
   void attemptLink(int x, int y, int dir) {
@@ -64,6 +64,7 @@ class Vine {
     connections[dir] = 1;
   }
 
+  // Returns the opposite of the given direction, according to the connections above
   int invert(int dir) {
     switch(dir) {
     case 0:
@@ -79,24 +80,6 @@ class Vine {
     }
   }
   
-  boolean matches(int[] match){
-    if(match.length != connections.length){
-      println("Error: matches() method is being passed an array of incorrect length");
-      return false;
-    }
-    //println("_____________");
-    //println("matching");
-    //printArray(connections);
-    //println("to");
-    //printArray(match);
-    //println("-------------");
-    if(connections[0] == match[0] &&
-       connections[1] == match[1] &&
-       connections[2] == match[2] &&
-       connections[3] == match[3]){return true;}return false;
-       //println("MATCH");printArray(connections);println("");
-  }
-  
   int sidesMatching(int[] match){
     if(match.length != connections.length){
       println("Error: matches() method is being passed an array of incorrect length");
@@ -110,10 +93,13 @@ class Vine {
     return count;
   }
   
-  
   int conCount(){
     int count = 0;
     for(Integer i : connections)if(i == 1)count++;
     return count;
+  }
+  
+  void highlight(boolean g){
+    highlighted  = g;
   }
 }
