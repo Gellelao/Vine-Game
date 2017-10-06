@@ -99,6 +99,7 @@ class Vine {
     return count;
   }
   
+  // Not currently used, but useful for debugging
   void highlight(boolean g){
     highlighted  = g;
   }
