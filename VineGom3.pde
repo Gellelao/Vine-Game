@@ -12,7 +12,7 @@ int[] NE = {0, 1, 0, 1};
 int[] SW = {1, 0, 1, 0};
 int[] SE = {1, 0, 0, 1};
 
-int scale = 2;
+int scale = 3;
 
 // Note that cursorCoords represent tile coordinates
 PVector cursorCoords;
@@ -49,7 +49,7 @@ void draw(){
   
   // Then cursor
   fill(27, 160, 33);
-  ellipse(min(29, cursorCoords.x)*tileSize+tileSize/2, min(29, cursorCoords.y)*tileSize+tileSize/2, tileSize, tileSize);
+  ellipse(min(29, cursorCoords.x)*tileSize+tileSize/2, min(29, cursorCoords.y)*tileSize+tileSize/2, tileSize/2, tileSize/2);
   
   // Then vines
   //______________________________________________________________
