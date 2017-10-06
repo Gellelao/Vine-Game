@@ -99,6 +99,10 @@ class Vine {
     return count;
   }
   
+  boolean hasConnection(int dir){
+    return connections[invert(dir)] == 1;
+  }
+  
   // Not currently used, but useful for debugging
   void highlight(boolean g){
     highlighted  = g;
