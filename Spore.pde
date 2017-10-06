@@ -50,8 +50,13 @@ class Spore{
         if(branches[i] == 1)options.add(getVector(i));
       }
       // Make sure it doesn't go back the way it came
-      options.remove(inverse(direction));
-      direction = options.get((int)random(options.size()));
+      if(options.size() == 1 && options.get(0).equals(inverse(direction))){
+        direction = inverse(direction);
+      }
+      else{
+        options.remove(inverse(direction));
+        direction = options.get((int)random(options.size()));
+      }
     }//=============================================================================
   }
   
@@ -75,16 +80,23 @@ class Spore{
     }
   }
   
-  //int getDir(PVector p){
-    
-  //}
+  int getDir(PVector p){
+    if(p.equals(N))return 0;
+    else if(p.equals(S))return 1;
+    else if(p.equals(E))return 2;
+    else if(p.equals(W))return 3;
+    else return -20;
+  }
   
   void shiftVine(){
     // if heading north or east
+    Vine nextVine = null;
     if(direction.x + direction.y > 0)
       // This is necessary due to a bug where north and east were moving one too far
-      currentVine = grid[(int)coords.x/tileSize][(int)coords.y/tileSize];
+      nextVine = grid[(int)coords.x/tileSize][(int)coords.y/tileSize];
     else
-      currentVine = grid[(int)coords.x/tileSize+(int)direction.x][(int)coords.y/tileSize+(int)direction.y];
+      nextVine = grid[(int)coords.x/tileSize+(int)direction.x][(int)coords.y/tileSize+(int)direction.y];
+    if(nextVine == null || !nextVine.hasConnection(getDir(direction)))direction = inverse(direction);
+    else currentVine = nextVine;
   }
 }
