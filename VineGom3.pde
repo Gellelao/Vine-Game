@@ -3,6 +3,11 @@ int gridWidth;
 int gridHeight;
 int tileSize;
 ArrayList<Spore> spores;
+ArrayList<Spore> removeSpores;
+ArrayList<Aphid> aphids;
+ArrayList<Aphid> removeAphids;
+ArrayList<Beetle> beetles;
+ArrayList<Beetle> removeBeetles;
 ArrayList<Pod> pods;
 ArrayList<PVector> validVines;
 
@@ -14,13 +19,14 @@ int[] SE = {1, 0, 0, 1};
 
 int scale = 2;
 float sporeSpeed = 0.5;// should be scale/4;
+float aphidSpeed = 2;
+float beetleSpeed = 8;
 int puffRate = (int)(256*sporeSpeed);
 
 // Note that cursorCoords represent tile coordinates
 PVector cursorCoords;
 
 void setup(){
-print(sporeSpeed);
   size(960, 960);
   frameRate(60);
   rectMode(CORNER);
@@ -32,13 +38,23 @@ print(sporeSpeed);
   tileSize   = 32*scale;
   
   spores = new ArrayList<Spore>();
+  removeSpores = new ArrayList<Spore>();
+  aphids = new ArrayList<Aphid>();
+  removeAphids = new ArrayList<Aphid>();
+  beetles = new ArrayList<Beetle>();
+  removeBeetles = new ArrayList<Beetle>();
   pods = new ArrayList<Pod>();
   validVines = new ArrayList<PVector>();
   cursorCoords = new PVector(13/scale, 13/scale);
   
   grid = new Vine[gridWidth][gridHeight];
   
-  grid[(int)cursorCoords.x][(int)cursorCoords.x] = new Vine((int)cursorCoords.x, (int)cursorCoords.y, 0);
+  int x = (int)cursorCoords.x;
+  int y = (int)cursorCoords.y;
+  Vine origin = new Vine(x, y, 0);
+  grid[x][x] = origin;   // This looks like a bug... but I think it doesn't matter
+  validVines.add(new PVector(x, y));
+  aphids.add(new Aphid(origin));
 }
 
 void draw(){
@@ -64,8 +80,23 @@ void draw(){
   }//           Draws all the vines
   //--------------------------------------------------------------
   
-  //On the top layer draw spores
+  // Delete unnecessary spores
+  spores.removeAll(removeSpores);
+  
+  // Then draw remaining spores
   for(Spore s : spores){s.update();}
+  
+    // Delete unnecessary aphids
+  aphids.removeAll(removeAphids);
+  
+  // Then draw remaining aphids
+  for(Aphid a : aphids){a.update();}
+  
+  // Delete unnecessary beetles
+  beetles.removeAll(removeBeetles);
+  
+  // Then draw remaining beetles on the top layer
+  for(Beetle b : beetles){b.update();}
 }
 
 void keyPressed() {
@@ -114,6 +145,7 @@ void keyPressed() {
   if(key == ' ') {
     //for(Pod p : pods)p.puff();
     spores.add(new Spore(grid[x][y]));
+    beetles.add(new Beetle(grid[x][y]));
   }
   
   // Ensure we stay within the bounds
