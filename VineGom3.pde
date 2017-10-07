@@ -12,14 +12,17 @@ int[] NE = {0, 1, 0, 1};
 int[] SW = {1, 0, 1, 0};
 int[] SE = {1, 0, 0, 1};
 
-int scale = 3;
+int scale = 2;
+float sporeSpeed = 0.5;// should be scale/4;
+int puffRate = (int)(256*sporeSpeed);
 
 // Note that cursorCoords represent tile coordinates
 PVector cursorCoords;
 
 void setup(){
+print(sporeSpeed);
   size(960, 960);
-  //frameRate(1);
+  frameRate(60);
   rectMode(CORNER);
   noSmooth();
   noStroke();
@@ -35,7 +38,7 @@ void setup(){
   
   grid = new Vine[gridWidth][gridHeight];
   
-  grid[(int)cursorCoords.x][(int)cursorCoords.x] = new Vine(0);
+  grid[(int)cursorCoords.x][(int)cursorCoords.x] = new Vine((int)cursorCoords.x, (int)cursorCoords.y, 0);
 }
 
 void draw(){
@@ -44,6 +47,7 @@ void draw(){
   
   // check to see if any pods should be created
   scan();
+  
   // Draw the pods on second layer
   for(Pod p : pods){p.update();}
   
@@ -55,7 +59,7 @@ void draw(){
   //______________________________________________________________
   for (int row = 0; row < gridWidth; row++) {
     for (int col = 0; col < gridHeight; col++) {
-      if (grid[row][col] != null) grid[row][col].update(row, col);
+      if (grid[row][col] != null) grid[row][col].update();
     }
   }//           Draws all the vines
   //--------------------------------------------------------------
@@ -108,7 +112,8 @@ void keyPressed() {
   }
   
   if(key == ' ') {
-    spores.add(new Spore(x*tileSize+tileSize/2, y*tileSize+tileSize/2, grid[x][y]));
+    //for(Pod p : pods)p.puff();
+    spores.add(new Spore(grid[x][y]));
   }
   
   // Ensure we stay within the bounds
@@ -117,7 +122,7 @@ void keyPressed() {
 
   // If a proper key has been pressed, create a vine and add it's location to validVines
   if(dir >= 0){
-    if(grid[x][y] == null) grid[x][y] = new Vine(dir);
+    if(grid[x][y] == null) grid[x][y] = new Vine(x, y, dir);
     if(x < gridWidth-1 && y < gridHeight-1)
       validVines.add(new PVector(x, y));
   }
@@ -171,7 +176,14 @@ void scan(){
 
     // To summon a pod, the box must be fully enclosed and have only two "extra" connections
     if(sides >= 8 && totalConnections <= 10){
-       pods.add(new Pod(x*tileSize+tileSize/2, y*tileSize+tileSize/2));
+       Pod toAdd = new Pod(x, y);
+       boolean dupe = false;
+       
+       // Only add if one has not been previously added here
+       for(Pod pod : pods){
+         if(pod.equals(toAdd))dupe = true;
+       }
+       if(!dupe)pods.add(toAdd);
     }
   }
 }

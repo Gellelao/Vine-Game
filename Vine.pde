@@ -1,4 +1,6 @@
 class Vine {
+  // Array coords not screen coords
+  PVector coords;
   PImage sprite;
   PImage sprite1;
   //                   N  S  E  W
@@ -6,29 +8,32 @@ class Vine {
   
   boolean highlighted = false;
 
-  Vine(int dir) {
+  Vine(int x, int y, int dir) {
+    coords = new PVector(x, y);
     connections[invert(dir)] = 1;
     sprite = loadImage("vine.png");
     sprite1 = loadImage("vine1.png");
   }
 
-  void update(int x, int y) {
-    if(highlighted)rect(x*tileSize, y*tileSize, tileSize, tileSize);
+  void update() {
+    int x = (int)coords.x*tileSize;
+    int y = (int)coords.y*tileSize;
+    if(highlighted)rect(x, y, tileSize, tileSize);
     // North Connection
     if (connections[0] == 1) 
-      image(sprite, x*tileSize, y*tileSize, tileSize, tileSize/2);
+      image(sprite, x, y, tileSize, tileSize/2);
     
     // South Connection
     if (connections[1] == 1) 
-      image(sprite, x*tileSize, y*tileSize+tileSize/2, tileSize, tileSize/2);
+      image(sprite, x, y+tileSize/2, tileSize, tileSize/2);
 
     // East Connection
     if (connections[2] == 1) 
-      image(sprite1, x*tileSize+tileSize/2, y*tileSize, tileSize/2, tileSize);
+      image(sprite1, x+tileSize/2, y, tileSize/2, tileSize);
       
     // West Connection
     if (connections[3] == 1) 
-      image(sprite1, x*tileSize, y*tileSize, tileSize/2, tileSize);
+      image(sprite1, x, y, tileSize/2, tileSize);
   }
 
   void attemptLink(int x, int y, int dir) {
