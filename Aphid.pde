@@ -1,17 +1,10 @@
 class Aphid extends Traverser{
-  PImage sprite;
-  int count;
-  int delay = 400;
   
   Aphid(Vine v){
-    super(v, aphidSpeed, loadImage("aphid.png"));
-    count = 0;
+    super(v, aphidSpeed, APHID);
   }
   
   void update(){
-    count++;
-    if(count < delay)return;
-    
     // Aphids "eat" any spores they come across
     for(Spore s : spores){
       if(dist(s.screenCoords.x, (int)s.screenCoords.y, (int)this.screenCoords.x, (int)this.screenCoords.y) < 5)removeSpores.add(s);

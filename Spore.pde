@@ -1,8 +1,7 @@
 class Spore extends Traverser{
-  PImage sprite;
   
   Spore(Vine v){
-    super(v, sporeSpeed, loadImage("spore.png"));
+    super(v, sporeSpeed, SPORE);
   }
   
   void update(){

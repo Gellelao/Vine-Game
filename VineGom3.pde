@@ -2,14 +2,25 @@ Vine[][] grid;
 int gridWidth;
 int gridHeight;
 int tileSize;
+Vine origin;
 ArrayList<Spore> spores;
 ArrayList<Spore> removeSpores;
 ArrayList<Aphid> aphids;
 ArrayList<Aphid> removeAphids;
 ArrayList<Beetle> beetles;
 ArrayList<Beetle> removeBeetles;
+ArrayList<Egg> eggs;
+ArrayList<Egg> removeEggs;
 ArrayList<Pod> pods;
 ArrayList<PVector> validVines;
+
+// Sprites
+PImage APHID;
+PImage BEETLE;
+PImage EGG;
+PImage POD;
+PImage SPORE;
+// Should do vines once I figure out rotations
 
 //          N  S  E  W
 int[] NW = {0, 1, 1, 0};
@@ -23,13 +34,19 @@ float aphidSpeed = 2;
 float beetleSpeed = 8;
 int puffRate = (int)(256*sporeSpeed);
 
+int aphidTimer;
+int aphidTimerMax = 1000;
+
 // Note that cursorCoords represent tile coordinates
 PVector cursorCoords;
+
+// Beetles eat Aphids which eat Spores
+// When a Beetle destroys and Aphid it lays eggs there
+// Supplying the egg with spores will create another beetle
 
 void setup(){
   size(960, 960);
   frameRate(60);
-  rectMode(CORNER);
   noSmooth();
   noStroke();
   fill(27, 160, 33);
@@ -43,21 +60,35 @@ void setup(){
   removeAphids = new ArrayList<Aphid>();
   beetles = new ArrayList<Beetle>();
   removeBeetles = new ArrayList<Beetle>();
+  eggs = new ArrayList<Egg>();
+  removeEggs = new ArrayList<Egg>();
   pods = new ArrayList<Pod>();
   validVines = new ArrayList<PVector>();
   cursorCoords = new PVector(13/scale, 13/scale);
+  
+  // Load in sprites
+  APHID = loadImage("aphid.png");
+  BEETLE = loadImage("beetle.png");
+  EGG = loadImage("egg.png");
+  POD = loadImage("pod.png");
+  SPORE = loadImage("spore.png");
+  
+  aphidTimer = 0;
   
   grid = new Vine[gridWidth][gridHeight];
   
   int x = (int)cursorCoords.x;
   int y = (int)cursorCoords.y;
-  Vine origin = new Vine(x, y, 0);
+  origin = new Vine(x, y, 0);
   grid[x][x] = origin;   // This looks like a bug... but I think it doesn't matter
   validVines.add(new PVector(x, y));
-  aphids.add(new Aphid(origin));
+  
+  eggs.add(new Egg(4, 4));
 }
 
 void draw(){
+  println(frameRate);
+  
   // Background on bottom layer
   background(255);
   
@@ -80,13 +111,20 @@ void draw(){
   }//           Draws all the vines
   //--------------------------------------------------------------
   
+  aphidTimer++;
+  // Create an aphid if the timer is ready
+  if(aphidTimer >= aphidTimerMax){
+    aphids.add(new Aphid(origin));
+    aphidTimer = 0;
+  }
+  
   // Delete unnecessary spores
   spores.removeAll(removeSpores);
   
   // Then draw remaining spores
   for(Spore s : spores){s.update();}
   
-    // Delete unnecessary aphids
+  // Delete unnecessary aphids
   aphids.removeAll(removeAphids);
   
   // Then draw remaining aphids
@@ -95,8 +133,14 @@ void draw(){
   // Delete unnecessary beetles
   beetles.removeAll(removeBeetles);
   
-  // Then draw remaining beetles on the top layer
+  // Then draw remaining beetles
   for(Beetle b : beetles){b.update();}
+  
+  // Delete unnecessary eggs
+  eggs.removeAll(removeEggs);
+  
+  // Then draw remaining eggs on the top layer
+  for(Egg e : eggs){e.update();}
 }
 
 void keyPressed() {

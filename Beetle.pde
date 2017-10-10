@@ -1,15 +1,18 @@
 class Beetle extends Traverser{
-  PImage sprite;
   
   Beetle(Vine v){
-    super(v, beetleSpeed, loadImage("beetle.png"));
+    super(v, beetleSpeed, BEETLE);
   }
   
   void update(){
     
     // Beetles "eat" any aphids they come across
     for(Aphid a : aphids){
-      if(dist(a.screenCoords.x, (int)a.screenCoords.y, (int)this.screenCoords.x, (int)this.screenCoords.y) < 5)removeAphids.add(a);
+      if(dist(a.screenCoords.x, (int)a.screenCoords.y, (int)this.screenCoords.x, (int)this.screenCoords.y) < 5){
+        removeAphids.add(a);
+        eggs.add(new Egg((int)currentVine.coords.x, (int)currentVine.coords.y));
+        removeBeetles.add(this);
+      }
     }
     
     // Delete this if outside the screen

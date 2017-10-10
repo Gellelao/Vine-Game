@@ -10,6 +10,8 @@ class Pod{
   
   void update(){
     fill(0, 0, 255);
+    rectMode(CORNER);
+    // draw(POD);
     rect(coords.x*tileSize+tileSize/2, coords.y*tileSize+tileSize/2, tileSize, tileSize);
     count++;
     if(count == puffRate){
