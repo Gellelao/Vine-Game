@@ -35,7 +35,7 @@ float beetleSpeed = 8;
 int puffRate = (int)(256*sporeSpeed);
 
 int aphidTimer;
-int aphidTimerMax = 1000;
+int aphidTimerMax = 2000;
 
 // Note that cursorCoords represent tile coordinates
 PVector cursorCoords;
@@ -95,9 +95,6 @@ void draw(){
   // check to see if any pods should be created
   scan();
   
-  // Draw the pods on second layer
-  for(Pod p : pods){p.update();}
-  
   // Then cursor
   fill(27, 160, 33);
   ellipse(min(29, cursorCoords.x)*tileSize+tileSize/2, min(29, cursorCoords.y)*tileSize+tileSize/2, tileSize/2, tileSize/2);
@@ -110,6 +107,9 @@ void draw(){
     }
   }//           Draws all the vines
   //--------------------------------------------------------------
+  
+  // Draw the pods on top of vines
+  for(Pod p : pods){p.update();}
   
   aphidTimer++;
   // Create an aphid if the timer is ready

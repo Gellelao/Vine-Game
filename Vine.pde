@@ -1,5 +1,5 @@
 class Vine {
-  // Array coords not screen coords
+  // Grid coords
   PVector coords;
   PImage sprite;
   PImage sprite1;

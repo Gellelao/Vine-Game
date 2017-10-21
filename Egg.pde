@@ -5,17 +5,15 @@ class Egg {
   
   Egg(int x, int y){
     coords = new PVector(x, y);
-    // DrawImage(EGG);
     screenCoords = new PVector(coords.x*tileSize+tileSize/2, coords.y*tileSize+tileSize/2);
     count = 0;
   }
 
   void update() {
     fill(0, 200, 0);
-    rectMode(CENTER);
-    rect(coords.x*tileSize+tileSize/2, coords.y*tileSize+tileSize/2, tileSize/2, tileSize/2);
-    fill(255, 0, 0);
-    ellipse(screenCoords.x,screenCoords.y,5,5);
+    imageMode(CENTER);
+    image(EGG, coords.x*tileSize+tileSize/2, coords.y*tileSize+tileSize/2, tileSize/2, tileSize/2);
+    imageMode(CORNER);
 
     // Eggs absorb any spores that come near
     for (Spore s : spores) {
