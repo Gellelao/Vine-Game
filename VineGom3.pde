@@ -91,9 +91,7 @@ void setup(){
   eggs.add(new Egg(4, 4));
 }
 
-void draw(){
-  println(cursorCoords);
-  
+void draw(){  
   // Background on bottom layer
   background(255);
   
