@@ -29,7 +29,7 @@ abstract class Traverser{
   abstract void update();
   
   void updatePos(){
-    image(sprite, screenCoords.x-(sprite.width*scale/4), screenCoords.y-(sprite.height*scale/4), sprite.width, sprite.height);
+    image(sprite, screenCoords.x-(sprite.width*scale/4.0), screenCoords.y-(sprite.height*scale/4.0), sprite.width*scale/2, sprite.height*scale/2);
     
     screenCoords.x+=speed*direction.x;
     screenCoords.y+=speed*direction.y;
@@ -43,7 +43,11 @@ abstract class Traverser{
     //\\\\\\\\\\\\\\\\\
     // Reached center \\============================================================
     if(screenCoords.x%tileSize == tileSize/2 && screenCoords.y%tileSize == tileSize/2){
-      pickDirection(false);
+      // Bounce back when hitting the cursor
+      if(screenCoords.x/tileSize-0.25 == cursorCoords.x && screenCoords.y/tileSize-0.25 == cursorCoords.y){
+        direction = inverse(direction);
+      }
+      else pickDirection(false);
     }//=============================================================================
   }
   

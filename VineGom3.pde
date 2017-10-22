@@ -20,6 +20,8 @@ PImage BEETLE;
 PImage EGG;
 PImage POD;
 PImage SPORE;
+PImage CURSOR;
+PImage CURSORTOP;
 // Should do vines once I figure out rotations
 
 //          N  S  E  W
@@ -28,10 +30,10 @@ int[] NE = {0, 1, 0, 1};
 int[] SW = {1, 0, 1, 0};
 int[] SE = {1, 0, 0, 1};
 
-int scale = 2;
+float scale = 4.0;
 float sporeSpeed = 0.5;// should be scale/4;
 float aphidSpeed = 2;
-float beetleSpeed = 8;
+float beetleSpeed = 4;
 int puffRate = (int)(256*sporeSpeed);
 
 int aphidTimer;
@@ -41,6 +43,7 @@ int aphidTimerMax = 2000;
 PVector cursorCoords;
 
 // Beetles eat Aphids which eat Spores
+// Aphids spawn periodically
 // When a Beetle destroys and Aphid it lays eggs there
 // Supplying the egg with spores will create another beetle
 
@@ -52,7 +55,7 @@ void setup(){
   fill(27, 160, 33);
   gridWidth  = 30;
   gridHeight = 30;
-  tileSize   = 32*scale;
+  tileSize   = 32*(int)scale;
   
   spores = new ArrayList<Spore>();
   removeSpores = new ArrayList<Spore>();
@@ -72,6 +75,8 @@ void setup(){
   EGG = loadImage("egg.png");
   POD = loadImage("pod.png");
   SPORE = loadImage("spore.png");
+  CURSOR = loadImage("cursor.png");
+  CURSORTOP = loadImage("cursorTop.png");
   
   aphidTimer = 0;
   
@@ -80,14 +85,14 @@ void setup(){
   int x = (int)cursorCoords.x;
   int y = (int)cursorCoords.y;
   origin = new Vine(x, y, 0);
-  grid[x][x] = origin;   // This looks like a bug... but I think it doesn't matter
+  grid[x][x] = origin;   // Intended, probably
   validVines.add(new PVector(x, y));
   
   eggs.add(new Egg(4, 4));
 }
 
 void draw(){
-  println(frameRate);
+  println(cursorCoords);
   
   // Background on bottom layer
   background(255);
@@ -95,9 +100,8 @@ void draw(){
   // check to see if any pods should be created
   scan();
   
-  // Then cursor
-  fill(27, 160, 33);
-  ellipse(min(29, cursorCoords.x)*tileSize+tileSize/2, min(29, cursorCoords.y)*tileSize+tileSize/2, tileSize/2, tileSize/2);
+  // Then the underneath part of the cursor
+  image(CURSOR, min(29, cursorCoords.x)*tileSize, min(29, cursorCoords.y)*tileSize, CURSOR.width*scale, CURSOR.height*scale);
   
   // Then vines
   //______________________________________________________________
@@ -108,8 +112,12 @@ void draw(){
   }//           Draws all the vines
   //--------------------------------------------------------------
   
+    
   // Draw the pods on top of vines
   for(Pod p : pods){p.update();}
+  
+  // Draw the top part of the cursor on top of the vines also
+  image(CURSORTOP, min(29, cursorCoords.x)*tileSize+tileSize/8, min(29, cursorCoords.y)*tileSize+tileSize/8, CURSORTOP.width*scale, CURSORTOP.height*scale);
   
   aphidTimer++;
   // Create an aphid if the timer is ready
