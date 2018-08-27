@@ -1,4 +1,4 @@
-# VineGom
+# Vine Game
 Grid-based vine traversal/creation game
 
 Hobby project about creating vines.
